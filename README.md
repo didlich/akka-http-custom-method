@@ -1,3 +1,6 @@
+# akka-http-custom-method
+
+Demo for custom method definition in akka-http.
 
 to start the app use:
 
@@ -5,4 +8,4 @@ to start the app use:
 
 to test the HTTP custom method use:
 
-    curl -i -H "Accept: application/xml" -X BOLT http://localhost:8080/index.html
+    curl -i -X BOLT http://localhost:8080/index.html
