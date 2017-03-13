@@ -5,6 +5,7 @@ import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model.RequestEntityAcceptance.Expected
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.settings.{ParserSettings, ServerSettings}
 import akka.stream.ActorMaterializer
 
 import scala.io.StdIn
@@ -20,6 +21,10 @@ object WebServer {
     // define custom media type:
     val BOLT = HttpMethod.custom("BOLT", safe = false, idempotent = true, requestEntityAcceptance = Expected)
 
+    // add custom method to parser settings:
+    val parserSettings = ParserSettings(system).withCustomMethods(BOLT)
+    val serverSettings = ServerSettings(system).withParserSettings(parserSettings)
+
     def requestHandler: HttpRequest => HttpResponse = {
 
       case HttpRequest(BOLT, uri, _, _, _) =>
@@ -34,7 +39,7 @@ object WebServer {
         HttpResponse(404, entity = "Unknown resource!")
     }
 
-    val bindingFuture = Http().bindAndHandleSync(requestHandler, "localhost", 8080)
+    val bindingFuture = Http().bindAndHandleSync(requestHandler, "localhost", 8080, settings = serverSettings)
 
     println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
     StdIn.readLine() // let it run until user presses return
